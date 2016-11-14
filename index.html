@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html  lang="en" ng-app='car'>
+	<head>
+		<meta charset="UTF-8">
+		<title>购物车</title>
+		<link rel="stylesheet" href="http://cdn.bootcss.com/bootstrap/3.3.0/css/bootstrap.min.css">
+		<script src="http://cdn.bootcss.com/angular.js/1.5.8/angular.js"></script>
+	</head>
+	<style>
+		.active{
+			display:block;
+		}
+		.btn-primary {
+	    color: #000;
+	    background-color: #fff;
+	    border-color: #357ebd;
+      }
+	</style>
+	<body ng-controller="mainCtrl"ng-click="show=false">
+	  <nav class="navbar navbar-default navbar-inverse" role="navigation">
+  <div class="container-fluid">
+    <!-- Brand and toggle get grouped for better mobile display -->
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="#">Brand</a>
+    </div>
+
+    <!-- Collect the nav links, forms, and other content for toggling -->
+    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+      <ul class="nav navbar-nav navbar-right">
+        <li><a href="#">Link</a></li>
+        <li class="dropdown"ng-init="show=false">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown"ng-click="show=!show;stop($event)">购物车<span class="caret"></span></a>
+          <ul ng-click="stop($event)"class="dropdown-menu" role="menu"ng-class="{active:show}">
+            <li class="li"ng-repeat="v in cars">
+            	<span>{{v.name}}</span>
+            	<span>{{v.num}}</span>
+            	<span class="glyphicon glyphicon-arrow-up" ng-click="addd($index)"></span>
+                <span class="glyphicon glyphicon-arrow-down"  ng-click="del($index)"></span>
+            	<span>{{v.price*v.num}}</span>
+            	<span ng-click="remove($index)">删除</span>
+            	
+           </li>
+           <li class="divider"></li>
+            <li>
+               <a href="#" ng-if="total()!=0">{{total()}}</a>
+               <a href="#" ng-if="total()==0">亲，购物车空了!</a>
+            </li>
+          </ul>
+        </li>
+      </ul>
+    </div><!-- /.navbar-collapse -->
+  </div><!-- /.container-fluid -->
+</nav>
+<div class="container">
+<div class="row">
+  <div class="col-sm-3"ng-repeat="v in goods">
+    <div class="thumbnail">
+      <div class="caption">
+        <h4>{{v.name}}</h4>
+        <p>{{v.price}}</p>
+        <p>
+        	<a href="#" class="btn btn-primary" role="button"ng-click="stop($event);add($index)">加入购物车</a> 
+        	
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+</body>
+</html>
+<script>
+	var app=angular.module('car',[]);
+	app.controller('mainCtrl',['$scope',function($scope){
+		$scope.goods=[
+		 {id:1000,name:"冰箱",price:3200},
+		 {id:1001,name:"电视",price:1200},
+		 {id:1002,name:"空调",price:2200},
+		 {id:1003,name:"路由器",price:200}
+		];
+		$scope.stop=function(e){
+			e.stopPropagation();
+		}
+		$scope.cars=[
+		{id:1000,name:"冰箱",price:3200,num:2},
+		{id:1001,name:"电视",price:1200,num:2}
+		];
+		$scope.total=function(){
+			var r=0;
+			for(var i=0;i<$scope.cars.length;i++){
+				r+=$scope.cars[i].price*$scope.cars[i].num;
+			}
+			return r;
+		}
+		$scope.add=function(index){
+			var v=$scope.goods[index];
+			if(hasid(v.id)!==-1){
+				$scope.cars[hasid(v.id)].num+=1;
+			}else{
+				v.num=1;
+				$scope.cars.push(v);
+				
+			}
+		}
+		function hasid(id){
+			for(var i=0;i<$scope.cars.length;i++){
+				if($scope.cars[i].id==id){
+					return i;
+				}
+			}
+			return -1;
+		}
+		$scope.remove=function(index){
+			$scope.cars.splice(index,1)
+		}
+		$scope.addd=function(index){
+			var v=$scope.cars[index];
+	      $scope.cars[hasid(v.id)].num+=1;
+		}
+		$scope.del=function(index){
+			var v=$scope.cars[index];
+			$scope.cars[hasid(v.id)].num-=1;
+			if( $scope.cars[hasid(v.id)].num==0){
+	       	  $scope.cars.splice(index,1);
+	       }
+		}
+	}])
+</script>
